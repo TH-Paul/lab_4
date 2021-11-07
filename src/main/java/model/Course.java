@@ -19,6 +19,13 @@ public class Course {
     public Course() {
     }
 
+    public Course(String name, int maxEnrollment, int credits){
+        this.name = name;
+        this.maxEnrollment = maxEnrollment;
+        this.credits = credits;
+        this.teacher = null;
+        this.studentsEnrolled = new ArrayList<>();
+    }
 
     public Course(String name, Person teacher, int maxEnrollment, List<Student> studentsEnrolled, int credits) {
         this.name = name;
@@ -84,10 +91,10 @@ public class Course {
      *
      * @return list with the names of the students
      */
-    public List<String> getStudentsNames(){
+    public List<String> getStudentsNamesAndIds(){
         List<String> studentsList = new ArrayList<>();
         for (Student s : studentsEnrolled){
-            String name = s.getLastName() + " " + s.getFirstName();
+            String name = s.getNameAndId();
             studentsList.add(name);
         }
         return studentsList;
@@ -103,7 +110,7 @@ public class Course {
                 "name='" + name + '\'' +
                 ", teacherName='" + getTeacherName() + '\'' +
                 ", maxEnrollment=" + maxEnrollment +
-                ", studentsEnrolled=" + getStudentsNames() +
+                ", studentsEnrolled=" + getStudentsNamesAndIds() +
                 ", credits=" + credits +
                 '}';
     }

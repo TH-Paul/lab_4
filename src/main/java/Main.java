@@ -43,8 +43,8 @@ public class Main {
 //        studentRepo.create(student2);
 
         System.out.println(courseRepo.getAll());
-        StudentController studentController = new StudentController(studentRepo);
-        System.out.println(studentController.obtainObjects());
+        //StudentController studentController = new StudentController(studentRepo);
+        //System.out.println(studentController.obtainObjects());
 
         //System.out.println(courseRepo.getAll());
     }

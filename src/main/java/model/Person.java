@@ -15,6 +15,10 @@ public abstract class Person {
 
     }
 
+    public String wholeName(){
+        return this.lastName + " " + this.firstName;
+    }
+
     public String getFirstName() {
         return firstName;
     }

@@ -41,13 +41,13 @@ public class CourseFileRepository extends FileRepository<Course>{
 
     /**
      * finds the Student Object with the given name in the student repo
-     * @param studentName1 - String
+     * @param studentNameAndId1 - String
      * @return Student Object
      */
-    public Student findStudentWithName(String studentName1){
+    public Student findStudentWithNameAndId(String studentNameAndId1){
         for(Student student : studentRepo.getAll()){
-            String studentName2 = student.getLastName() + " " + student.getFirstName();
-            if(studentName2.equals(studentName1)){
+            String studentNameAndId2 = student.getNameAndId();
+            if(studentNameAndId2.equals(studentNameAndId1)){
                 return student;
             }
         }
@@ -55,7 +55,12 @@ public class CourseFileRepository extends FileRepository<Course>{
     }
 
 
-    public List<String> obtainStudentNames(JsonNode array){
+    /**
+     *
+     * @param array - from parsing the json nodes
+     * @return list of strings with student names and ids
+     */
+    public List<String> obtainStudentNamesAndIds(JsonNode array){
         List<String> studentNames = new ArrayList<>();
         for(int i = 0; i < array.size(); i++){
             studentNames.add(array.get(i).asText());
@@ -81,13 +86,13 @@ public class CourseFileRepository extends FileRepository<Course>{
 
             course.setStudentsEnrolled(new ArrayList<>());
 
-            JsonNode array = node.get("studentsNames");
+            JsonNode array = node.get("studentsNamesAndIds");
 
             if(array.size() > 0) {
-                List<String> studentNames = obtainStudentNames(array);
+                List<String> studentNamesAndIds = obtainStudentNamesAndIds(array);
 
-                for (String studentName : studentNames) {
-                    Student student = findStudentWithName(studentName);
+                for (String studentNameAndId : studentNamesAndIds) {
+                    Student student = findStudentWithNameAndId(studentNameAndId);
                     course.getStudentsEnrolled().add(student);
                     student.getEnrolledCourses().add(course);
                 }

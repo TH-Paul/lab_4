@@ -14,6 +14,10 @@ public abstract class FileRepository<T> extends InMemoryRepository<T>{
         super();
     }
 
+    /**
+     * adds an entity to the matching repo
+     * @param obj - to be added
+     */
     @Override
     public T create(T obj) throws IOException {
         super.create(obj);
@@ -21,12 +25,19 @@ public abstract class FileRepository<T> extends InMemoryRepository<T>{
         return obj;
     }
 
+    /**
+     *
+     * @param obj - to be deleted
+     */
     @Override
     public void delete(T obj) throws IOException {
         super.delete(obj);
         writeToFile();
     }
 
+    /**
+     * writes the objects from the repo in the file
+     */
     public void writeToFile() throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         ObjectWriter writer = objectMapper.writer(new DefaultPrettyPrinter());
@@ -37,4 +48,9 @@ public abstract class FileRepository<T> extends InMemoryRepository<T>{
     public T update(T obj){
         return null;
     }
+
+    /**
+     * reads data from file and saves it into the matching repo
+     */
+    public abstract void loadFromFile() throws IOException;
 }

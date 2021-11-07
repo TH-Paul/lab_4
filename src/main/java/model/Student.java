@@ -25,7 +25,9 @@ public class Student extends Person{
         this.enrolledCourses = enrolledCourses;
     }
 
-
+    public String getNameAndId(){
+        return this.wholeName() + " - " + this.studentId;
+    }
 
     public long getStudentId() {
         return studentId;
