@@ -1,5 +1,7 @@
 package controller;
 
+import exceptions.CreditsLimit;
+import exceptions.FullCourse;
 import model.Course;
 import model.Student;
 import repository.CourseFileRepository;
@@ -30,7 +32,7 @@ public class StudentController extends AbstractController<Student>{
     public List<Student> filterStudentsByCredits(int credits){
         List<Student> filteredList = new ArrayList<>();
         for(Student student : obtainObjects()){
-            if(student.getTotalCredits() <= credits){
+            if(student.getTotalCredits() < credits){
                 filteredList.add(student);
             }
         }
@@ -62,17 +64,32 @@ public class StudentController extends AbstractController<Student>{
 //            }
             course.getStudentsEnrolled().removeIf(student -> student.getStudentId() == object.getStudentId());
         }
+
+        courseRepo.writeToFile();
     }
 
-    public boolean register(Course course, Student student){
-        if(student.getTotalCredits() + course.getCredits() <= 30 &&
-                course.getMaxEnrollment() - course.getStudentsEnrolled().size() > 0){
-            course.getStudentsEnrolled().add(student);
-            student.getEnrolledCourses().add(course);
-            student.setTotalCredits(student.getTotalCredits() + course.getCredits());
-            return true;
+    public boolean register(Course course, Student student) throws IOException {
+        if(student.getTotalCredits() + course.getCredits() > 30){
+            throw new CreditsLimit("Too much credits");
+        }
+        if(course.getMaxEnrollment() - course.getStudentsEnrolled().size() == 0){
+            throw new FullCourse("No more places!");
         }
 
-        return false;
+        for(Course c : student.getEnrolledCourses()){
+            if(c.getName().equals(course.getName())){
+                return false;
+            }
+        }
+
+        course.getStudentsEnrolled().add(student);
+        student.getEnrolledCourses().add(course);
+        student.setTotalCredits(student.getTotalCredits() + course.getCredits());
+
+        courseRepo.writeToFile();
+        this.repository.writeToFile();
+
+
+        return true;
     }
 }

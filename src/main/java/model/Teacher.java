@@ -16,6 +16,11 @@ public class Teacher extends Person{
         super();
     }
 
+    public Teacher(String firstName, String lastName) {
+        super(firstName, lastName);
+        this.courses = new ArrayList<>();
+    }
+
     public Teacher(String firstName, String lastName, List<Course> courses) {
         super(firstName, lastName);
         this.courses = courses;
@@ -65,5 +70,9 @@ public class Teacher extends Person{
                 ", lastName='" + lastName + '\'' +
                 ", courses=" + getCoursesNames() +
                 '}';
+    }
+
+    public String showTeacher(){
+        return '\n' + this.wholeName() + '\n' + "Courses: " + getCoursesNames() + '\n';
     }
 }

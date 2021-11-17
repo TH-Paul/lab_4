@@ -18,6 +18,13 @@ public class Student extends Person{
         super();
     }
 
+    public Student(String firstName, String lastName, long studentId) {
+        super(firstName, lastName);
+        this.studentId = studentId;
+        this.enrolledCourses = new ArrayList<>();
+        this.totalCredits = 0;
+    }
+
     public Student(String firstName, String lastName, long studentId, int totalCredits, List<Course> enrolledCourses) {
         super(firstName, lastName);
         this.studentId = studentId;
@@ -25,7 +32,7 @@ public class Student extends Person{
         this.enrolledCourses = enrolledCourses;
     }
 
-    public String getNameAndId(){
+    public String obtainNameAndId(){
         return this.wholeName() + " - " + this.studentId;
     }
 
@@ -88,5 +95,10 @@ public class Student extends Person{
                 ", totalCredits=" + totalCredits +
                 ", enrolledCourses=" + getCoursesNames() +
                 '}';
+    }
+
+    public String showStudent(){
+        return '\n' + this.wholeName() + '\n' + "ID: " + studentId + '\n' + "Total credits: " +
+                totalCredits + '\n' + "Enrolled Courses: " + getCoursesNames() + '\n';
     }
 }

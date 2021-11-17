@@ -39,6 +39,7 @@ public class CourseFileRepository extends FileRepository<Course>{
         return null;
     }
 
+
     /**
      * finds the Student Object with the given name in the student repo
      * @param studentNameAndId1 - String
@@ -46,7 +47,7 @@ public class CourseFileRepository extends FileRepository<Course>{
      */
     public Student findStudentWithNameAndId(String studentNameAndId1){
         for(Student student : studentRepo.getAll()){
-            String studentNameAndId2 = student.getNameAndId();
+            String studentNameAndId2 = student.obtainNameAndId();
             if(studentNameAndId2.equals(studentNameAndId1)){
                 return student;
             }
@@ -82,11 +83,13 @@ public class CourseFileRepository extends FileRepository<Course>{
             course.setMaxEnrollment(node.path("maxEnrollment").asInt());
             course.setCredits(node.path("credits").asInt());
 
-            course.setTeacher(findTeacherWithName(node.path("teacherName").asText()));
+
+            Teacher teacher = findTeacherWithName(node.path("teacherName").asText());
+            course.setTeacher(teacher);
 
             course.setStudentsEnrolled(new ArrayList<>());
 
-            JsonNode array = node.get("studentsNamesAndIds");
+            JsonNode array = node.path("studentsNamesAndIds");
 
             if(array.size() > 0) {
                 List<String> studentNamesAndIds = obtainStudentNamesAndIds(array);
@@ -97,6 +100,11 @@ public class CourseFileRepository extends FileRepository<Course>{
                     student.getEnrolledCourses().add(course);
                 }
             }
+
+            if(teacher != null){
+                teacher.getCourses().add(course);
+            }
+
             repoList.add(course);
         }
 

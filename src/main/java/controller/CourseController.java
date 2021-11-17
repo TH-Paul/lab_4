@@ -1,5 +1,6 @@
 package controller;
 
+import exceptions.InvalidCourseChange;
 import model.Course;
 import model.Student;
 import model.Teacher;
@@ -33,7 +34,7 @@ public class CourseController extends AbstractController<Course>{
     public List<Course> filterCoursesByEnrolledStudents(int enrolledStudents){
         List<Course> filteredList = new ArrayList<>();
         for(Course course : obtainObjects()){
-            if(course.getStudentsEnrolled().size() <= enrolledStudents){
+            if(course.getStudentsEnrolled().size() < enrolledStudents){
                 filteredList.add(course);
             }
         }
@@ -64,13 +65,18 @@ public class CourseController extends AbstractController<Course>{
         }
 
         for(Student student : studentRepo.getAll()){
-            for(Course course : student.getEnrolledCourses()){
-                if (course == object){
-                    student.getEnrolledCourses().remove(object);
-                    student.setTotalCredits(student.getTotalCredits() - object.getCredits());
-                }
-            }
+//            for(Course course : student.getEnrolledCourses()){
+//                if (course == object){
+//                    student.getEnrolledCourses().remove(object);
+//                    student.setTotalCredits(student.getTotalCredits() - object.getCredits());
+//                }
+//            }
+            student.setTotalCredits(student.getTotalCredits() - object.getCredits());
+            student.getEnrolledCourses().removeIf(course -> course.getName().equals(object.getName()));
         }
+
+        studentRepo.writeToFile();
+        teacherRepo.writeToFile();
     }
 
 
@@ -85,13 +91,64 @@ public class CourseController extends AbstractController<Course>{
         return availableCourses;
     }
 
-    public void assignTeacherForCourse(Teacher teacher, Course course){
+    public void assignTeacherForCourse(Teacher teacher, Course course) throws IOException {
+        Teacher oldTeacher = new Teacher();
         for(Course c : this.repository.getAll()){
             if(c == course){
+                if(c.getTeacher() != null){
+                    oldTeacher = c.getTeacher();
+                }
                 course.setTeacher(teacher);
+                break;
             }
         }
         teacher.getCourses().add(course);
+
+        for(Teacher teacher1 : teacherRepo.getAll()){
+            if(teacher1 == oldTeacher){
+                teacher1.getCourses().remove(course);
+                break;
+            }
+        }
+
+        this.repository.writeToFile();
+        teacherRepo.writeToFile();
+    }
+
+    public void modifyCourseCredits(Course modifiedCourse, int newCredits) throws IOException {
+        for(Student student : studentRepo.getAll()){
+            for(Course course : student.getEnrolledCourses()){
+                if (course == modifiedCourse){
+                    student.setTotalCredits(student.getTotalCredits() - modifiedCourse.getCredits() + newCredits);
+                    break;
+                }
+            }
+        }
+
+//        for(Course course : this.obtainObjects()){
+//            if(course == modifiedCourse){
+//                course.setCredits(newCredits);
+//                break;
+//            }
+//        }
+
+        modifiedCourse.setCredits(newCredits);
+        this.repository.writeToFile();
+        studentRepo.writeToFile();
+    }
+
+    public void modifyCourseMaxEnrolled(Course modifiedCourse, int newMaxEnrolled) throws IOException {
+//            for(Course course : this.obtainObjects()){
+//                if(course == modifiedCourse){
+//                    course.setMaxEnrollment(newMaxEnrolled);
+//                    break;
+//                }
+//            }
+        if(newMaxEnrolled < modifiedCourse.getStudentsEnrolled().size()){
+            throw new InvalidCourseChange("There are already more students enrolled!");
+        }
+        modifiedCourse.setMaxEnrollment(newMaxEnrolled);
+        this.repository.writeToFile();
     }
 
 }

@@ -39,5 +39,7 @@ public class TeacherController extends AbstractController<Teacher>{
             }
         }
         this.repository.delete(object);
+
+        courseRepo.writeToFile();
     }
 }
