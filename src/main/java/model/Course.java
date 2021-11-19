@@ -8,8 +8,9 @@ import java.util.Objects;
 
 public class Course {
     private String name;
+
     @JsonIgnore
-    private Person teacher;
+    private Teacher teacher;
     private int maxEnrollment;
     private int credits;
 
@@ -25,9 +26,11 @@ public class Course {
         this.credits = credits;
         this.teacher = null;
         this.studentsEnrolled = new ArrayList<>();
+
+
     }
 
-    public Course(String name, Person teacher, int maxEnrollment, List<Student> studentsEnrolled, int credits) {
+    public Course(String name, Teacher teacher, int maxEnrollment, List<Student> studentsEnrolled, int credits) {
         this.name = name;
         this.teacher = teacher;
         this.maxEnrollment = maxEnrollment;
@@ -43,11 +46,11 @@ public class Course {
         this.name = name;
     }
 
-    public Person getTeacher() {
+    public Teacher getTeacher() {
         return teacher;
     }
 
-    public void setTeacher(Person teacher) {
+    public void setTeacher(Teacher teacher) {
         this.teacher = teacher;
     }
 
@@ -94,14 +97,17 @@ public class Course {
     public List<String> getStudentsNamesAndIds(){
         List<String> studentsList = new ArrayList<>();
         for (Student s : studentsEnrolled){
-            String name = s.getNameAndId();
+            String name = s.obtainNameAndId();
             studentsList.add(name);
         }
         return studentsList;
     }
 
     public String getTeacherName(){
-        return teacher.getLastName() + " " + teacher.getFirstName();
+        if(teacher != null) {
+            return teacher.getLastName() + " " + teacher.getFirstName();
+        }
+        return null;
     }
 
     @Override
@@ -113,5 +119,11 @@ public class Course {
                 ", studentsEnrolled=" + getStudentsNamesAndIds() +
                 ", credits=" + credits +
                 '}';
+    }
+
+    public String showCourse(){
+        return '\n' + name + '\n' + "Teacher: " + getTeacherName() + '\n' + "Maximum number of students: " +
+                maxEnrollment + '\n' + "Enrolled Students: " + getStudentsNamesAndIds() + '\n' +
+                "Credits: " + credits + '\n';
     }
 }
